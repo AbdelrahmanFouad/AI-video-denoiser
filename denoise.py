@@ -40,7 +40,7 @@ def denoise_video(input_file, preset, output_file=None, progress_callback=None):
     presets = {
         'fast': 'atadenoise=0.05:0.05:0.1',
         'balanced': 'hqdn3d=4.0:3.0:6.0:4.5',
-        'hq': 'nlmeans=s=1.5:p=7:r=15'
+        'hq': 'hqdn3d=6.0:5.0:10.0:8.0'
     }
 
     filter_str = presets.get(preset, presets['balanced'])
