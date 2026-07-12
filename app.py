@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import denoise
 
-st.set_page_config(page_title="AI Video Denoiser", page_icon="✨")
+st.set_page_config(page_title="AI Video Denoiser", page_icon="✨", layout="wide")
 
 st.title("✨ AI Video Denoiser")
 st.markdown("Upload up to 5 videos to remove AI-generated noise and artifacts.")
