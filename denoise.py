@@ -44,15 +44,10 @@ def denoise_video(input_file, preset, output_file=None, progress_callback=None):
     }
 
     filter_str = presets.get(preset, presets['balanced'])
-    hw_encoder = check_hardware_acceleration()
     
+    # Force software encoding for stability on Streamlit Cloud
     cmd = ['ffmpeg', '-i', input_file, '-vf', filter_str]
-    
-    if hw_encoder:
-        cmd.extend(['-c:v', hw_encoder, '-global_quality', '20'])
-    else:
-        cmd.extend(['-c:v', 'libx264', '-crf', '18', '-preset', 'medium'])
-
+    cmd.extend(['-c:v', 'libx264', '-crf', '18', '-preset', 'medium'])
     cmd.extend(['-c:a', 'copy', '-pix_fmt', 'yuv420p', '-y', output_file])
 
     duration = get_duration(input_file)
