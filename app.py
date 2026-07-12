@@ -30,14 +30,17 @@ if uploaded_files:
             def update_progress(p):
                 progress_bar.progress(p)
                 
-            success, output_file = denoise.denoise_video(temp_input, preset, progress_callback=update_progress)
+            success, result = denoise.denoise_video(temp_input, preset, progress_callback=update_progress)
             
             if success:
+                output_file = result
                 st.success(f"Denoised: {uploaded_file.name}")
                 with open(output_file, "rb") as f:
                     st.download_button(f"Download {uploaded_file.name}", f, file_name=f"denoised_{uploaded_file.name}")
             else:
+                error_log = result
                 st.error(f"Failed to process {uploaded_file.name}")
+                st.text_area("FFmpeg Error Log", error_log, height=300)
                 
             # Cleanup
             if os.path.exists(temp_input): os.remove(temp_input)

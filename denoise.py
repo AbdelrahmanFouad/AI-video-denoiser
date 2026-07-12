@@ -56,14 +56,17 @@ def denoise_video(input_file, preset, output_file=None, progress_callback=None):
     cmd.extend(['-c:a', 'copy', '-pix_fmt', 'yuv420p', '-y', output_file])
 
     duration = get_duration(input_file)
-    process = subprocess.Popen(cmd, stderr=subprocess.PIPE, universal_newlines=True)
+    # Redirect stderr to a pipe to capture logs
+    process = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
     time_pattern = re.compile(r"time=(\d+:\d+:\d+\.\d+)")
 
+    error_log = []
     try:
         while True:
             line = process.stderr.readline()
-            if not line and process.poll() is not None:
+            if not line:
                 break
+            error_log.append(line)
             
             match = time_pattern.search(line)
             if match and duration and progress_callback:
@@ -74,9 +77,12 @@ def denoise_video(input_file, preset, output_file=None, progress_callback=None):
                 progress_callback(progress)
 
         process.wait()
-        return process.returncode == 0, output_file
-    except:
-        return False, None
+        if process.returncode == 0:
+            return True, output_file
+        else:
+            return False, "".join(error_log)
+    except Exception as e:
+        return False, str(e)
 
 def main():
     parser = argparse.ArgumentParser(description="AI Video Denoiser CLI (Optimized)")
